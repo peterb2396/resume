@@ -12,6 +12,11 @@ const Welcome = (props) => {
     const [leadership, setLeadership] = useState("I led my Master's project, organizing and conducting meetings, assigning tasks, developing ideas and plans, as well as keeping the team on track and jumping in when members needed help. This project was the only one selected from the class to be displayed at the University Showcase. Additionally, owning and operating my construction company requires imense leadership and responsibility to manage all of the jobs, sub contractors, clients and maitenance. ")
     const [skill, setSkill] = useState(leadership)
     const [about, setAbout] = useState("I studied physics, neuroscience & python at Binghamton University, and then continued my study of Computer Science at University at Albany. I made Dean's list every semester of college, and have a minor in Mathematics. I graduated a year early with a 4.0 GPA in 2023, and will earn my Masters this upcoming Spring.")
+	const [init, setInit] = useState(true)
+
+
+	if (init)
+{
 
     // Load skill data
     axios.get(`${props.host}/getData`)
@@ -22,11 +27,13 @@ const Welcome = (props) => {
         setInterpersonal(content['interpersonal'])
         setLeadership(content['leadership'])
         setAbout(content['about'])
+	setSkill(content['leadership'])
     })
     .catch((e) => {
         console.log(e)
     })
-
+	setInit(false)
+}
     // eslint-disable-next-line
     async function getJoke()
     {
@@ -142,7 +149,7 @@ const Welcome = (props) => {
 
             </div>
 
-            <button style= {{float: 'right'}}type="button" className="btn btn-outline-primary" onClick = {handleDownload}>Download Resume</button>
+            <button style= {{float: 'right',marginRight:'10px'}}type="button" className="btn btn-outline-primary" onClick = {handleDownload}>Download Resume</button>
 
         </div>
         

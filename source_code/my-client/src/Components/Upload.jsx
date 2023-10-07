@@ -18,7 +18,7 @@ const Upload = (props) => {
       if (file) {
         const formData = new FormData();
         formData.append('resume', file);
-        formData.append('id', sessionStorage.getItem('id'))
+        formData.append('id', props.getToken(sessionStorage.getItem('id')))
 
         await axios.post(`${props.host}/uploadResume`, formData, {
           headers: {

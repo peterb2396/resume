@@ -7,6 +7,39 @@ const fs = require('fs');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+
+//authenticate
+function isAuthenticated(req, res, next) {
+	console.log(req.body)
+	return next(); //temp bypass must merge session storage
+  if (!(req.body.id != process.env.SECRET)) { // You can replace this with your specific authentication check
+   
+	const directoryPath = '../public/images'; // Replace with the path to your directory
+
+	fs.readdir(directoryPath, (err, files) => {
+	  if (err) {
+	    console.error('Error reading directory:', err);
+	    return;
+	  }
+
+	  files.forEach((file) => {
+	    if (path.extname(file).toLowerCase() === '.pdf') {
+	      const filePath = path.join(directoryPath, file);
+
+	      fs.unlink(filePath, (err) => {
+	        if (err) {
+	          console.error('Error deleting file:', err);
+	        } else {
+	          console.log(`Deleted: ${filePath}`);
+	        }
+	      });
+	    }
+	  });
+	});
+	 return next(); // User is authenticated, proceed to the next middleware
+  }
+  return res.status(401).json({ message: 'Authentication required' });
+};
 //Backend routes (endpoints)
 const host = process.env.BASE_URL
 router.use(express.static(path.join(__dirname, '../public')));
@@ -185,14 +218,8 @@ router.get('/getData', (req, res) => {
 })
 
 // uplaod resume
-router.post('/uploadResume', uploadResume.single('resume'), (req, res) => {
+router.post('/uploadResume', isAuthenticated, uploadResume.single('resume'), (req, res) => {
   // The file is saved as "resume_peter_buonaiuto.pdf" in the "public" folder
-  if (req.body.id != process.env.SECRET)
-  {
-    res.status(403)
-    res.json("UNAUTHORIZED")
-    return
-  }
   res.json({ message: 'File uploaded successfully' });
 });
 

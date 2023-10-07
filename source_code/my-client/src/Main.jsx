@@ -58,7 +58,6 @@ fetch(raw)
       </Routes>
     </BrowserRouter>
     <div id = 'socials'>
-      <hr></hr>
       <a class = 'social' href="https://github.com/peterb2396" target="_blank" rel="noreferrer">
         <img src="github.png"  width = "30px"alt = "github"></img>
       </a>
