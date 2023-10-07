@@ -149,7 +149,7 @@ const Welcome = (props) => {
 
             </div>
 
-            <button style= {{float: 'right',marginRight:'10px'}}type="button" className="btn btn-outline-primary" onClick = {handleDownload}>Download Resume</button>
+            <button style= {{float: 'right', marginRight: '10px'}}type="button" className="btn btn-outline-primary" onClick = {handleDownload}>Download Resume</button>
 
         </div>
         

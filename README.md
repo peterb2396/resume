@@ -8,12 +8,20 @@ And my github classroom repo is:
 https://github.com/ualbany-software-engineering/frontend-assignment-peterb2396.git
 
 ## Docker Deployment:
-    To install docker:
+    * sudo apt update
+    * sudo git clone <>
     * cd into source code (where compose and caddyfile are)
+
     * sudo curl -fsSL https://get.docker.com -o get-docker.sh
     * sudo sh get-docker.sh
+    * sudo docker compose up
 
-    'sudo docker compose up'
+### Modify server service
+    * sudo docker compose down
+    * sudo docker rmi source_code-server
+    <service the file> ex reset images * sudo rm -rf images/*
+    * sudo docker compose up
+
 	
 
 ## Standard ec2 Deployment:
