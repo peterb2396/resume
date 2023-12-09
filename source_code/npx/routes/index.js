@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const axios = require('axios')
 
 
 //authenticate
@@ -178,6 +179,46 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAILER_PASS,
   },
 });
+
+// Login with spotify
+router.get('/auth-callback', async(req, res) => {
+  const code = req.query.code;
+  const state = req.query.state;
+  const split = state.indexOf('uid')
+
+  const redir = state.substring(0, split)
+  const uid = state.substring(split + 3, state.length)
+  
+    if (code && state) {
+      const response = await axios.post('https://accounts.spotify.com/api/token', null, {
+        params: {
+          grant_type: 'authorization_code',
+          code,
+          client_id: process.env.SPOTIFY_CLIENT,
+          redirect_uri: `${host}/auth-callback`
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        auth: {
+          username: process.env.SPOTIFY_CLIENT,
+          password: process.env.SPOTIFY_SECRET, // Replace with your actual client secret
+        },
+      });
+
+      const accessToken = response.data.access_token;
+      const refreshToken = response.data.refresh_token;
+
+      // Store in database for this client the codes
+      res.redirect(redir+"?state=success")
+
+      // Store the access token (e.g., in state or a context)
+      // Redirect or perform other actions as needed
+    } else {
+      res.redirect(redir+"?state=fail")
+    }
+      
+})
 
 // Download resume
 router.get('/download/resume', (req, res) => {

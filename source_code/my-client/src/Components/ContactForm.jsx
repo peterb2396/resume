@@ -30,9 +30,11 @@ const ContactForm = (props) => {
 
   return (
     <div style = {{margin:'20px', display: 'flex',
-    justifyContent: 'center',
+    
     alignItems: 'center',
-    flexDirection: 'column'}}>
+    flexDirection: 'column',
+    height: '100vh',
+    }}>
         <img src = 'email.png' alt="email icon" width= "100px"></img>
         <p style={{ fontSize:'30px', fontWeight:'100'}}>LET'S GET IN TOUCH.</p>
         <div >

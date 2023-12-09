@@ -5,6 +5,7 @@ import axios from 'axios';
 
 export default function Login(props) {
     const host = props.host
+    const redir = props.redir
     
     const AUTH_LOGIN = "Login"
     const AUTH_SIGNUP = "Sign up"
@@ -46,8 +47,16 @@ export default function Login(props) {
                 error("success!")
                 props.setToken(response.data.username, response.data.id)
                 sessionStorage.setItem('admin', response.data.admin);
-                navigate('/');
-                window.location.reload()
+                if (redir)
+                {
+                    navigate(redir);
+
+                }
+                else{
+                    navigate('/');
+                    window.location.reload()
+                }
+                
             }
             else{
                 error("Invalid password!")
@@ -157,10 +166,13 @@ export default function Login(props) {
     
     
   return(
-        <div style = {{margin:'20px', display: 'flex',
-        justifyContent: 'center',
+        <div style = {{
+        display: 'flex',
         alignItems: 'center',
-        flexDirection: 'column'}}>
+        flexDirection: 'column',
+        backgroundColor: '#f0f0f0',
+        height: '100vh'
+        }}>
             <p style={{ fontSize:'30px', fontWeight:'100'}}>{authMode.toUpperCase()}</p>
                     <form>
                         <div className="form-group">
