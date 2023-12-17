@@ -8,39 +8,6 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const axios = require('axios')
 
-
-//authenticate
-function isAuthenticated(req, res, next) {
-	console.log(req.body)
-	return next(); //temp bypass must merge session storage
-  if (!(req.body.id != process.env.SECRET)) { // You can replace this with your specific authentication check
-   
-	const directoryPath = '../public/images'; // Replace with the path to your directory
-
-	fs.readdir(directoryPath, (err, files) => {
-	  if (err) {
-	    console.error('Error reading directory:', err);
-	    return;
-	  }
-
-	  files.forEach((file) => {
-	    if (path.extname(file).toLowerCase() === '.pdf') {
-	      const filePath = path.join(directoryPath, file);
-
-	      fs.unlink(filePath, (err) => {
-	        if (err) {
-	          console.error('Error deleting file:', err);
-	        } else {
-	          console.log(`Deleted: ${filePath}`);
-	        }
-	      });
-	    }
-	  });
-	});
-	 return next(); // User is authenticated, proceed to the next middleware
-  }
-  return res.status(401).json({ message: 'Authentication required' });
-};
 //Backend routes (endpoints)
 const host = process.env.BASE_URL
 router.use(express.static(path.join(__dirname, '../public')));
@@ -103,6 +70,7 @@ const Item = mongoose.model('Item', itemSchema);
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  refresh_token: String,
   admin: Boolean
 });
 // Compile schema to a Model
@@ -151,7 +119,7 @@ const resumeStorage = multer.diskStorage({
     cb(null, 'public');
   },
   filename: (req, file, cb) => {
-    cb(null, 'resume_peter_buonaiuto.pdf'); 
+    cb(null, 'resume_temp.pdf'); 
   },
 });
 
@@ -180,6 +148,37 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// From ESP, get the refresh token from DB 
+router.post('/authorize_musicbox', async(req,res) => {
+  const username = req.body.username;
+  const pass = req.body.pass
+
+  // bcrypt compare
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (user) {
+      // Compare the provided password with the stored hashed password
+      const passwordMatch = bcrypt.compare(pass, user.password);
+
+      if (passwordMatch) {
+        // Passwords match, return the refresh_token
+        res.send(user.refresh_token)
+      } else {
+        // Passwords don't match
+        res.status(401).send("Unauthorized")
+      }
+    } else {
+      // User not found
+      res.status(404).send("User not found")
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).send("500 Server error")
+  }
+})
+
 // Login with spotify
 router.get('/auth-callback', async(req, res) => {
   const code = req.query.code;
@@ -205,11 +204,10 @@ router.get('/auth-callback', async(req, res) => {
           password: process.env.SPOTIFY_SECRET, // Replace with your actual client secret
         },
       });
-
-      const accessToken = response.data.access_token;
+      // We don't need to store the access token, because it only lasts an hour
       const refreshToken = response.data.refresh_token;
+      User.findOneAndUpdate({'_id': uid}, {'refresh_token': refreshToken})
 
-      // Store in database for this client the codes
       res.redirect(redir+"?state=success")
 
       // Store the access token (e.g., in state or a context)
@@ -259,9 +257,34 @@ router.get('/getData', (req, res) => {
 })
 
 // uplaod resume
-router.post('/uploadResume', isAuthenticated, uploadResume.single('resume'), (req, res) => {
+router.post('/uploadResume', uploadResume.single('resume'), (req, res) => {
+  const sourcePath = path.join(__dirname, '..', 'public', 'resume_temp.pdf');
+  const destinationPath = path.join(__dirname, '..', 'public', 'resume_peter_buonaiuto.pdf');
+
   // The file is saved as "resume_peter_buonaiuto.pdf" in the "public" folder
-  res.json({ message: 'File uploaded successfully' });
+  if (req.body.id == process.env.SECRET)
+  {
+    // Accept the temp file
+    fs.rename(sourcePath, destinationPath, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('File has been uploaded successfully.');
+      }
+    });
+    res.json({ message: 'File uploaded successfully' });
+  
+  }
+  else{
+
+    fs.unlink(sourcePath, (err)=> {});
+    res.status(403)
+    res.json("UNAUTHORIZED")
+
+  }
+  
+  
+  
 });
 
 // Route to handle email sending

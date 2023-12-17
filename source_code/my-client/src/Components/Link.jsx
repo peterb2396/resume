@@ -43,6 +43,11 @@ export default function Link(props) {
               <div style={{ height: '80px' }} />
               <img style={{ width: '200px' }} src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" alt = "Logo"></img>
               <div style={styles.title}>{state === 'success'? 'Successfully Linked!': 'Error linking accounts.'}</div>
+
+              <div>
+                <p>{state === 'success'? 'You can now connect to the setup network and complete the initialization.': 'Error linking accounts.'}</p>
+              </div>
+
               {state === 'fail' && 
               (
                 <button style={styles.spotifyButton} onClick={authenticate}>
@@ -61,7 +66,7 @@ export default function Link(props) {
     // If not logged in, show login window
     if (!props.token())
     {
-        return <Login redir = "/link/musicbox" setToken = {props.setToken} token = {props.token} host = {host}/>
+        return <Login msg = "Login to your BuiltByPeter account to continue to MusicBox" redir = "/link/musicbox" setToken = {props.setToken} token = {props.token} host = {host}/>
     }
    
     // We are logged in and need to authorize
@@ -72,6 +77,9 @@ export default function Link(props) {
               <div style={{ height: '80px' }} />
               <img style={{ width: '200px' }} src = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" alt = "Logo"></img>
               <div style={styles.title}>Never forget that amazing new song.</div>
+              <div>
+                <p>Connect your Spotify account to start using MusicBox</p>
+              </div>
               <div style={{ height: '80px' }} />
               <button style={styles.spotifyButton} onClick={authenticate}>
                 Link Accounts

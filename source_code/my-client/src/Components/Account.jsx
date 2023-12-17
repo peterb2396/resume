@@ -101,10 +101,13 @@ const Account = (props) =>
 
     return(
 
-        <div style = {{margin:'20px', display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column'}}>
+        <div style = {{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+            
+            height: '100vh'
+        }}>
             <p style={{ fontSize:'30px', fontWeight:'100'}}>MODIFY ACCOUNT</p>
                 <form>
                     <div className="form-group">

@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate} from 'react-router-dom';
 
 import axios from 'axios';
 
@@ -166,11 +166,11 @@ export default function Login(props) {
     
     
   return(
+    <div>
         <div style = {{
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-        backgroundColor: '#f0f0f0',
         height: '100vh'
         }}>
             <p style={{ fontSize:'30px', fontWeight:'100'}}>{authMode.toUpperCase()}</p>
@@ -194,8 +194,15 @@ export default function Login(props) {
                             </div>
                             
                         </div>
+
+                        <div>
+                            <p>{props.msg}</p>
+                        </div>
                     </form>
             </div>
+
+            
+        </div>
 
    
   )
